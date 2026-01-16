@@ -18,14 +18,14 @@ public class CameraPlugin {
      */
     public CameraPlugin() {
         instance = this;
-        System.out.println("[TemplatePlugin] Plugin loaded!");
+        System.out.println("CameraPlugin Plugin loaded!");
     }
     
     /**
      * Called when plugin is enabled.
      */
     public void onEnable() {
-        System.out.println("[TemplatePlugin] Plugin enabled!");
+        System.out.println("CameraPlugin Plugin enabled!");
         
         // TODO: Initialize your plugin here
         // - Load configuration
@@ -38,7 +38,7 @@ public class CameraPlugin {
      * Called when plugin is disabled.
      */
     public void onDisable() {
-        System.out.println("[TemplatePlugin] Plugin disabled!");
+        System.out.println("CameraPlugin Plugin disabled!");
         
         // TODO: Cleanup your plugin here
         // - Save data

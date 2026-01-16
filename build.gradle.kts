@@ -11,11 +11,17 @@ description = findProperty("pluginDescription") as String? ?: "A Hytale plugin t
 repositories {
     mavenLocal()
     mavenCentral()
+//    flatDir {
+//        dirs("libs")
+//    }
 }
 
 dependencies {
     // Hytale Server API (provided by server at runtime)
     compileOnly(files("libs/hytale-server.jar"))
+
+    // Dev implementation
+    implementation(files("libs/HytaleServer.jar"))
     
     // Common dependencies (will be bundled in JAR)
     implementation("com.google.code.gson:gson:2.10.1")
@@ -30,7 +36,7 @@ dependencies {
 runHytale {
     // TODO: Update this URL when Hytale server is available
     // Using Paper server as placeholder for testing the runServer functionality
-    jarUrl = "https://fill-data.papermc.io/v1/objects/d5f47f6393aa647759f101f02231fa8200e5bccd36081a3ee8b6a5fd96739057/paper-1.21.10-115.jar"
+//    jarUrl = "https://fill-data.papermc.io/v1/objects/d5f47f6393aa647759f101f02231fa8200e5bccd36081a3ee8b6a5fd96739057/paper-1.21.10-115.jar"
 }
 
 tasks {
@@ -63,7 +69,7 @@ tasks {
         archiveClassifier.set("")
         
         // Relocate dependencies to avoid conflicts
-        relocate("com.google.gson", "com.yourplugin.libs.gson")
+        relocate("com.google.gson", "com.cameraplugin.libs.gson")
         
         // Minimize JAR size (removes unused classes)
         minimize()
