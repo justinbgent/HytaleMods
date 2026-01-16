@@ -1,0 +1,19 @@
+{
+  "Group": "EdgelineGames",
+  "Name": "CameraPlugin",
+  "Version": "1.0.0",
+  "Description": "A Hytale plugin for camera zoom",
+  "Authors": [
+    {
+      "Name": "JustinGent",
+      "Email": "",
+      "Url": "https://justingent.com"
+    }
+  ],
+  "Website": "https://github.com/yourusername/hytale-plugin-template",
+  "Main": "com.edgelinegames.cameraplugin.CameraPlugin",
+  "ServerVersion": "*",
+  "Dependencies": {},
+  "OptionalDependencies": {},
+  "DisabledByDefault": false
+}
