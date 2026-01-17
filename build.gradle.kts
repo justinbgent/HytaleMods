@@ -4,7 +4,7 @@ plugins {
     id("run-hytale")
 }
 
-group = findProperty("pluginGroup") as String? ?: "com.example"
+group = findProperty("pluginGroup") as String? ?: "com.edgelinegames"
 version = findProperty("pluginVersion") as String? ?: "1.0.0"
 description = findProperty("pluginDescription") as String? ?: "A Hytale plugin template"
 
@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     // Hytale Server API (provided by server at runtime)
-    compileOnly(files("libs/hytale-server.jar"))
+    compileOnly(files("libs/HytaleServer.jar"))
 
     // Dev implementation
     implementation(files("libs/HytaleServer.jar"))
@@ -34,9 +34,8 @@ dependencies {
 
 // Configure server testing
 runHytale {
-    // TODO: Update this URL when Hytale server is available
-    // Using Paper server as placeholder for testing the runServer functionality
-//    jarUrl = "https://fill-data.papermc.io/v1/objects/d5f47f6393aa647759f101f02231fa8200e5bccd36081a3ee8b6a5fd96739057/paper-1.21.10-115.jar"
+    // Use local Hytale server JAR from libs folder
+    jarUrl = "libs/HytaleServer.jar"
 }
 
 tasks {
@@ -69,7 +68,7 @@ tasks {
         archiveClassifier.set("")
         
         // Relocate dependencies to avoid conflicts
-        relocate("com.google.gson", "com.cameraplugin.libs.gson")
+        relocate("com.google.gson", "com.edgelinegames.cameraplugin.libs.gson")
         
         // Minimize JAR size (removes unused classes)
         minimize()

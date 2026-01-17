@@ -13,7 +13,7 @@ import java.security.MessageDigest
  * 
  * Usage:
  *   runHytale {
- *       jarUrl = "https://example.com/hytale-server.jar"
+ *       jarUrl = "libs/HytaleServer.jar"
  *   }
  *   
  *   ./gradlew runServer
@@ -46,7 +46,7 @@ open class RunHytalePlugin : Plugin<Project> {
  * Extension for configuring the RunHytale plugin.
  */
 open class RunHytaleExtension {
-    var jarUrl: String = "https://example.com/hytale-server.jar"
+    var jarUrl: String = "libs/HytaleServer.jar"
 }
 
 /**
@@ -64,40 +64,59 @@ open class RunServerTask : DefaultTask() {
         val pluginsDir = File(runDir, "plugins").apply { mkdirs() }
         val jarFile = File(runDir, "server.jar")
 
-        // Cache directory for downloaded server JARs
-        val cacheDir = File(
-            project.layout.buildDirectory.asFile.get(), 
-            "hytale-cache"
-        ).apply { mkdirs() }
+        val serverJarPath = jarUrl.get()
+        val sourceJar: File
+        
+        // Check if it's a URL or local file path
+        if (serverJarPath.startsWith("http://") || serverJarPath.startsWith("https://")) {
+            // It's a URL - download and cache it
+            val cacheDir = File(
+                project.layout.buildDirectory.asFile.get(), 
+                "hytale-cache"
+            ).apply { mkdirs() }
 
-        // Compute hash of URL for caching
-        val urlHash = MessageDigest.getInstance("SHA-256")
-            .digest(jarUrl.get().toByteArray())
-            .joinToString("") { "%02x".format(it) }
-        val cachedJar = File(cacheDir, "$urlHash.jar")
+            // Compute hash of URL for caching
+            val urlHash = MessageDigest.getInstance("SHA-256")
+                .digest(serverJarPath.toByteArray())
+                .joinToString("") { "%02x".format(it) }
+            val cachedJar = File(cacheDir, "$urlHash.jar")
 
-        // Download server JAR if not cached
-        if (!cachedJar.exists()) {
-            println("Downloading Hytale server from ${jarUrl.get()}")
-            try {
-                URI.create(jarUrl.get()).toURL().openStream().use { input ->
-                    cachedJar.outputStream().use { output ->
-                        input.copyTo(output)
+            // Download server JAR if not cached
+            if (!cachedJar.exists()) {
+                println("Downloading Hytale server from $serverJarPath")
+                try {
+                    URI.create(serverJarPath).toURL().openStream().use { input ->
+                        cachedJar.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
                     }
+                    println("Server JAR downloaded and cached")
+                } catch (e: Exception) {
+                    println("ERROR: Failed to download server JAR")
+                    println("Make sure the jarUrl in build.gradle.kts is correct")
+                    println("Error: ${e.message}")
+                    return
                 }
-                println("Server JAR downloaded and cached")
-            } catch (e: Exception) {
-                println("ERROR: Failed to download server JAR")
-                println("Make sure the jarUrl in build.gradle.kts is correct")
-                println("Error: ${e.message}")
+            } else {
+                println("Using cached server JAR")
+            }
+            
+            sourceJar = cachedJar
+        } else {
+            // It's a local file path - resolve it relative to project directory
+            sourceJar = File(project.projectDir, serverJarPath)
+            
+            if (!sourceJar.exists()) {
+                println("ERROR: Server JAR not found at: ${sourceJar.absolutePath}")
+                println("Make sure the jarUrl in build.gradle.kts points to a valid file")
                 return
             }
-        } else {
-            println("Using cached server JAR")
+            
+            println("Using local server JAR: ${sourceJar.absolutePath}")
         }
 
         // Copy server JAR to run directory
-        cachedJar.copyTo(jarFile, overwrite = true)
+        sourceJar.copyTo(jarFile, overwrite = true)
 
         // Copy plugin JAR to plugins folder
         project.tasks.findByName("shadowJar")?.outputs?.files?.firstOrNull()?.let { shadowJar ->
